@@ -1,0 +1,154 @@
+#装饰器是什么:@闭包的外部函数引用
+#装饰器作用:装饰我们的函数,给函数添加额外的功能,不改变装饰前的函数代码(道德)
+#代码怎么写,
+	#1.先写闭包
+	#2.在要装饰的函数上写闭外外层的引用
+
+def set_fun(func):
+	def call_fun():
+		print("权限认证")
+		#func()
+	return call_fun
+
+@set_fun
+def test():
+	print("test")
+
+
+test()
+#装饰后的函数test,调用的时候其实调用的是内部函数 ====>装饰后test = set_fun内call_fun
+#装饰前的函数test,是由func指向的
+
+# test = set_fun(test)
+# test()
+
+
+
+###这个是外部调用#########
+test()
+# test()
+# test()
+# test()
+# test()
+#
+# test = set_fun(test)
+# test()
+
+
+#@xxx是一个语法糖,就是不是真实代码,只是给程序员看的
+
+# fun = set_fun(test)
+# fun()
+
+# test()
+
+
+
+
+#函数的情况
+	# 1. 无参,无返回
+	# 2.有参.无返回
+	# 3. 无参,有返回
+	# 4.有参.有返回
+######无参,无返回#########
+
+def set_fun(func):
+	def call_fun():  #一定会执行原先的函数
+		print("权限认证")
+		func()
+	return call_fun
+
+@set_fun   #  test = set_fun(test)
+def test():
+	print("test")
+
+#装饰前的test是func指向的
+#装饰后的test是call_fun指向
+
+# test()
+
+
+################有参.无返回##############
+
+
+def set_fun(func):
+	def call_fun(*args,**kwargs):
+		func(*args,**kwargs)
+	return call_fun
+
+@set_fun # test = set_fun(test)
+def test(*args,**kwargs):
+	print(args)
+	print(kwargs)
+
+#装饰后的test指向是call_fun
+#装饰前的test是由func指向的
+
+# test(123,a = 3)
+
+
+##########无参,有返回#############
+
+def set_fun(func):
+	def call_fun():
+		return func()
+	return call_fun
+
+@set_fun
+def test():
+	return 100
+#装饰器不去改变原先函数的值跟结果
+
+# print(test())
+
+
+##########有参.有返回##########
+
+def set_fun(func):
+	def call_fun(*args,**kwargs):
+		print("权限认证")
+		return  func(*args,**kwargs)
+	return call_fun
+
+@set_fun   #test = set_fun(test)
+def test(*args,**kwargs):
+	print(args)
+	print(kwargs)
+	return args
+#装饰前的test是由func指向的
+#装饰后的test调用的是call_fun
+#装饰器不去改变原先的结果与值
+
+print(test(123, a=5))
+
+
+# 两个装饰器装饰一个函数
+import time
+
+# 两个装饰器装饰一个函数
+def set_fun1(func1):
+	print("set_fun1")
+
+	def call_fun1():
+		print("call_fun1")
+		func1()
+
+	return call_fun1
+
+
+def set_fun2(func2):
+	print("set_fun2")
+	print(time.time())
+	def call_fun2():
+		print("call_fun2")
+		func2()
+
+	return call_fun2
+
+
+@set_fun2
+@set_fun1
+def test():
+	print("test")
+
+test()
